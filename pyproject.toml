@@ -1,0 +1,38 @@
+[project]
+name = "docker-unpack"
+description = "Unpack Docker images"
+dependencies = [
+    "watcloud-utils @ git+https://github.com/WATonomous/watcloud-utils.git@c8ce1006716e65971f750560f90f442721b3777d",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "BSD-2-Clause"}
+
+dynamic = ["version"]
+
+[project.scripts]
+docker-unpack = "docker_unpack.cli:app"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.version]
+source = "scm"
+write_to = "docker_unpack/_version.py"
+write_template = "__version__ = '{}'"
+
+[tool.pdm.dev-dependencies]
+test = [
+    "pytest>=8.3.3",
+]
+
+[tool.pdm.scripts]
+docker-unpack = { call = "docker_unpack.cli:app" }
+
+[tool.pdm.build]
+# Docs: https://backend.pdm-project.org/build_config/#include-or-exclude-files
+includes = ["src"]
