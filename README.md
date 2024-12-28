@@ -4,7 +4,7 @@ Unpack a docker image into a directory. This is useful for using Docker images w
 
 ## Getting started
 
-Install the apckage with pip:
+Install the package with pip:
 
 ```sh
 pip install git+https://github.com/WATonomous/docker-unpack.git
