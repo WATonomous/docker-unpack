@@ -14,7 +14,7 @@ Unpack an image:
 
 ```sh
 docker pull hello-world
-docker save hello-world | APP_LOG_LEVEL=DEBUG docker-unpack /tmp/hello-world
+docker save hello-world | APP_LOG_LEVEL=DEBUG docker-unpack unpack /tmp/hello-world
 apptainer run /tmp/hello-world /hello
 ```
 
