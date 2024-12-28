@@ -1,16 +1,24 @@
 import json
-import sys
+import os
 import tarfile
 import tempfile
-import time
 from pathlib import Path
-import os
 
 from watcloud_utils.logging import logger, set_up_logging
 
 set_up_logging()
 
 from watcloud_utils.typer import app, typer
+
+from ._version import __version__
+
+
+@app.command()
+def version():
+    """
+    Print the version of the tool.
+    """
+    print(__version__)
 
 
 def escape(value):
@@ -137,7 +145,9 @@ def generate_env(root_path: Path, img_config: dict):
 @app.command()
 def unpack(input_file: typer.FileBinaryRead, output_dir: Path):
     if output_dir.exists() and any(output_dir.iterdir()):
-        raise Exception(f"Output directory {output_dir} already exists and is not empty!")
+        raise Exception(
+            f"Output directory {output_dir} already exists and is not empty!"
+        )
 
     with tempfile.TemporaryDirectory() as temp_dir:
         logger.info(f"Extracting tar file to {temp_dir=}")

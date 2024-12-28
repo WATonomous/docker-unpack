@@ -59,8 +59,8 @@ jobs:
 
       - name: Run sanity check
         run: |
-          gatrace --help
-          gatrace version
+          docker-unpack --help
+          docker-unpack version
 
   publish:
     runs-on: ubuntu-latest
