@@ -136,6 +136,8 @@ def generate_env(root_path: Path, img_config: dict):
 
 @app.command()
 def unpack(output_dir: Path):
+    output_dir.mkdir(parents=True)
+
     input_file = sys.stdin.buffer
 
     with tempfile.TemporaryDirectory() as temp_dir:
