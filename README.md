@@ -24,3 +24,7 @@ apptainer run /tmp/hello-world /hello
 pdm install
 pdm run docker-unpack --help
 ```
+
+## Notes
+
+This tool is similar to [cvmfs-ducc](https://github.com/cvmfs/cvmfs/tree/531e6f6bd4b2fa8847138d7046d9a09070234464/ducc). The main difference is that cvmfs-ducc is designed to be featureful and compatible with various tools (podman, docker thin image, etc.), whereas docker-unpack is designed to be simple and fast, and only supports unpacking Docker images into flat (not layered) directories.
