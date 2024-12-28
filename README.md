@@ -21,5 +21,6 @@ apptainer run /tmp/hello-world /hello
 ## Development
 
 ```sh
+pdm install
 pdm run docker-unpack --help
 ```
