@@ -12,6 +12,7 @@ from watcloud_utils.typer import app, typer
 
 from ._version import __version__
 from .utils import generate_env, generate_runscript, MyTarFile, StreamProxy
+from .apptainer_base_env import make_base_env
 
 
 @app.command()
@@ -79,6 +80,7 @@ def unpack(input_file: typer.FileBinaryRead, output_dir: Path):
 
         logger.info(f"Done extracting layers to {extracted_root}")
 
+        make_base_env(extracted_root)
         generate_runscript(extracted_root, config["config"])
         generate_env(extracted_root, config["config"])
 

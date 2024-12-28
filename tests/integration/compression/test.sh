@@ -7,13 +7,13 @@ set -o errexit -o nounset -o pipefail
 
 trap 'echo "Error on line $LINENO: $BASH_COMMAND"; exit 1' ERR
 
-docker pull alpine
+docker pull alpine:3.19
 
 # MARK: Compressing the whole package
 for compression in zstd gzip bzip2 xz; do
   echo "Testing package compression with $compression"
   __tmpdir=$(mktemp -d)
-  docker save alpine | $compression > "$__tmpdir/image.tar"
+  docker save alpine:3.19 | $compression > "$__tmpdir/image.tar"
   APP_LOG_LEVEL=INFO pdm run docker-unpack unpack "$__tmpdir/image.tar" "$__tmpdir/unpacked"
   test -d "$__tmpdir/unpacked/etc"
   rm -rf "$__tmpdir"

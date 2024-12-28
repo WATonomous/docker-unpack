@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.19
 
 RUN touch /1 /2 /3
 RUN rm /2

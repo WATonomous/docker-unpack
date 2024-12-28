@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12']
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
       fail-fast: false # Continue running jobs even if one fails
 
     steps:
@@ -33,6 +33,10 @@ jobs:
       - name: Run pytest
         run: |
           pdm run --verbose pytest tests
+      
+      - name: Set up apptainer
+        run: |
+          curl -s https://raw.githubusercontent.com/apptainer/apptainer/12008da192388e6cd512b32a5dac80369a6d4047/tools/install-unprivileged.sh | bash -s - "$HOME/.local"
       
       - name: Run integration tests
         run: |
