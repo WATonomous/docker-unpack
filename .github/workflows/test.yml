@@ -34,6 +34,11 @@ jobs:
         run: |
           pdm run --verbose pytest tests
       
+      - name: Set up apptainer
+        uses: eWaterCycle/setup-apptainer@49d1318e968f6198413f051f13af8b8bb9153368 # v2
+        with:
+          apptainer-version: 1.3.0
+      
       - name: Run integration tests
         run: |
           for test in tests/integration/*/test.sh; do
