@@ -10,7 +10,7 @@ trap 'echo "Error on line $LINENO: $BASH_COMMAND"; exit 1' ERR
 docker pull alpine
 
 # MARK: Compressing the whole package
-for compression in gzip bzip2 xz; do
+for compression in zstd gzip bzip2 xz; do
   echo "Testing package compression with $compression"
   __tmpdir=$(mktemp -d)
   docker save alpine | $compression > "$__tmpdir/image.tar"
@@ -22,7 +22,7 @@ done
 # MARK: Compressing the layers
 docker buildx create --name compression-test --driver docker-container --use
 
-for compression in gzip estargz; do
+for compression in zstd gzip estargz; do
   echo "Testing layer compression with $compression"
 
     __tmpdir=$(mktemp -d)
