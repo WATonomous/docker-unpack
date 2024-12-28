@@ -136,8 +136,8 @@ def generate_env(root_path: Path, img_config: dict):
 
 @app.command()
 def unpack(input_file: typer.FileBinaryRead, output_dir: Path):
-    if output_dir.exists():
-        raise Exception(f"Output directory {output_dir} already exists")
+    if output_dir.exists() and any(output_dir.iterdir()):
+        raise Exception(f"Output directory {output_dir} already exists and is not empty!")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         logger.info(f"Extracting tar file to {temp_dir=}")
@@ -176,7 +176,10 @@ def unpack(input_file: typer.FileBinaryRead, output_dir: Path):
                             basename.removeprefix(".wh.")
                         )
                         logger.debug(f"Removing {orig_file_path} from {extracted_root}")
-                        (extracted_root / orig_file_path).unlink()
+                        if (extracted_root / orig_file_path).is_dir():
+                            (extracted_root / orig_file_path).rmdir()
+                        else:
+                            (extracted_root / orig_file_path).unlink()
                     else:
                         logger.debug(f"Extracting {member.name} to {extracted_root}")
                         tar.extract(member, extracted_root)
