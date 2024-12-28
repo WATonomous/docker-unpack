@@ -13,7 +13,7 @@ __tmpdir=$(mktemp -d)
 docker save alpine | APP_LOG_LEVEL=INFO pdm run docker-unpack unpack - "$__tmpdir"
 
 # Test whether the environment variables are correctly set
-apptainer exec --env MYTEST=someteststring "$__tmpdir" env | grep MYTEST
+apptainer exec --compat --env MYTEST=someteststring "$__tmpdir" env | grep MYTEST
 
 rm -rf "$__tmpdir"
 echo "PASS"
