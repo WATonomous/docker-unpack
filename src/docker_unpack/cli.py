@@ -10,7 +10,7 @@ from watcloud_utils.logging import logger, set_up_logging
 
 set_up_logging()
 
-from watcloud_utils.typer import app
+from watcloud_utils.typer import app, typer
 
 
 def escape(value):
@@ -135,10 +135,9 @@ def generate_env(root_path: Path, img_config: dict):
 
 
 @app.command()
-def unpack(output_dir: Path):
-    output_dir.mkdir(parents=True)
-
-    input_file = sys.stdin.buffer
+def unpack(input_file: typer.FileBinaryRead, output_dir: Path):
+    if output_dir.exists():
+        raise Exception(f"Output directory {output_dir} already exists")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         logger.info(f"Extracting tar file to {temp_dir=}")
