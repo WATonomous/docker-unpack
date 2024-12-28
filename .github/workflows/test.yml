@@ -36,7 +36,8 @@ jobs:
       
       - name: Set up apptainer
         run: |
-          curl -s https://raw.githubusercontent.com/apptainer/apptainer/12008da192388e6cd512b32a5dac80369a6d4047/tools/install-unprivileged.sh | bash -s - /opt
+          echo PATH: $PATH
+          curl -s https://raw.githubusercontent.com/apptainer/apptainer/12008da192388e6cd512b32a5dac80369a6d4047/tools/install-unprivileged.sh | bash -s - /usr
       
       - name: Run integration tests
         run: |
