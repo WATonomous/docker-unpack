@@ -1,6 +1,6 @@
 [project]
 name = "docker-unpack"
-description = "Unpack Docker images"
+description = "Unpack Docker images for use with Apptainer and CVMFS"
 dependencies = [
     "watcloud-utils @ git+https://github.com/WATonomous/watcloud-utils.git@c8ce1006716e65971f750560f90f442721b3777d",
 ]
