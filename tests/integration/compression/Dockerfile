@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.19
 
 RUN touch /dummyfile1
 RUN echo "hello" > /dummyfile2
