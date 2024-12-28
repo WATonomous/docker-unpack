@@ -194,7 +194,6 @@ class MyTarFile(tarfile.TarFile):
                 cctx=zstandard.ZstdCompressor(write_checksum=True, threads=-1),
             )
         try:
-            print(f"calling taropen with {name=}, {mode=}, {zfobj=}")
             tarobj = cls.taropen(name, mode, zfobj)
         except (OSError, EOFError, zstandard.ZstdError) as exc:
             zfobj.close()
