@@ -35,9 +35,8 @@ jobs:
           pdm run --verbose pytest tests
       
       - name: Set up apptainer
-        uses: eWaterCycle/setup-apptainer@49d1318e968f6198413f051f13af8b8bb9153368 # v2
-        with:
-          apptainer-version: 1.3.0
+        run: |
+          curl -s https://raw.githubusercontent.com/apptainer/apptainer/main/tools/install-unprivileged.sh | bash -s - /opt
       
       - name: Run integration tests
         run: |
