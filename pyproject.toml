@@ -3,6 +3,7 @@ name = "docker-unpack"
 description = "Unpack Docker images for use with Apptainer and CVMFS"
 dependencies = [
     "watcloud-utils @ git+https://github.com/WATonomous/watcloud-utils.git@c8ce1006716e65971f750560f90f442721b3777d",
+    "zstandard>=0.23.0,<1",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
