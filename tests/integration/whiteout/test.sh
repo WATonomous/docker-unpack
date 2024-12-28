@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Integration test: whiteout
+# This test aims to verify that whiteout files (deletions) are correctly handled by the unpacker
 
 set -o errexit -o nounset -o pipefail
 
@@ -20,5 +21,8 @@ test -d "$__tmpdir/dir/4"
 test ! -d "$__tmpdir/dir/5"
 test -d "$__tmpdir/dir/6"
 test -f "$__tmpdir/dir/6/somefile"
+
+rm -rf "$__tmpdir"
+docker rmi whiteout
 
 echo "PASS"
