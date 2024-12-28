@@ -11,7 +11,7 @@ set_up_logging()
 from watcloud_utils.typer import app, typer
 
 from ._version import __version__
-from .utils import generate_env, generate_runscript
+from .utils import generate_env, generate_runscript, MyTarFile, StreamProxy
 
 
 @app.command()
@@ -30,7 +30,8 @@ def unpack(input_file: typer.FileBinaryRead, output_dir: Path):
 
     with tempfile.TemporaryDirectory() as temp_dir:
         logger.info(f"Extracting tar file to {temp_dir=}")
-        with tarfile.open(fileobj=input_file, mode="r|*") as tar:
+        input_file_proxy = StreamProxy(input_file)
+        with MyTarFile.open(fileobj=input_file_proxy, mode=f"r{'|' if input_file_proxy.supports_streaming() else ':'}{input_file_proxy.getcomptype()}") as tar:
             tar.extractall(temp_dir)
 
         manifest_path = Path(temp_dir) / "manifest.json"
@@ -55,7 +56,10 @@ def unpack(input_file: typer.FileBinaryRead, output_dir: Path):
             layer_path = Path(temp_dir) / layer
             logger.info(f"Extracting {layer_path=}")
 
-            with tarfile.open(layer_path) as tar:
+            with open(layer_path, "rb") as f:
+                comptype = StreamProxy(f).getcomptype()
+
+            with MyTarFile.open(layer_path, f"r:{comptype}") as tar:
                 for member in tar:
                     basename = os.path.basename(member.name)
 

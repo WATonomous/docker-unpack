@@ -1,6 +1,10 @@
 import os
+import tarfile
+import typing
 from pathlib import Path
+
 from watcloud_utils.logging import logger
+
 
 def escape(value):
     """Escapes special characters in a string for use in a shell script."""
@@ -121,3 +125,87 @@ def generate_env(root_path: Path, img_config: dict):
 
     # Set executable permissions
     os.chmod(env_path, 0o755)
+
+
+class StreamProxy:
+    """
+    A stream wrapper to detect compression type.
+
+    Derived from https://github.com/python/cpython/blob/2cf396c368a188e9142843e566ce6d8e6eb08999/Lib/tarfile.py#L574-L598
+    """
+
+    def __init__(self, fileobj):
+        self.fileobj = fileobj
+        self.buf = self.fileobj.read(tarfile.BLOCKSIZE)
+
+    def read(self, size):
+        self.read = self.fileobj.read
+        return self.buf
+
+    def getcomptype(self):
+        if self.buf.startswith(b"\x1f\x8b\x08"):
+            return "gz"
+        elif self.buf[0:3] == b"BZh" and self.buf[4:10] == b"1AY&SY":
+            return "bz2"
+        elif self.buf.startswith((b"\x5d\x00\x00\x80", b"\xfd7zXZ")):
+            return "xz"
+        elif self.buf.startswith(b"\x28\xb5\x2f\xfd"):
+            return "zst"
+        else:
+            return "tar"
+
+    def supports_streaming(self):
+        comptype = self.getcomptype()
+        return comptype not in ("zst",)
+
+    def close(self):
+        self.fileobj.close()
+
+
+class MyTarFile(tarfile.TarFile):
+    """
+    A custom TarFile class that supports more compression types.
+
+    Derived from:
+    - https://github.com/python/cpython/issues/81276#issuecomment-1966037544
+    """
+
+    OPEN_METH = {"zst": "zstopen"} | tarfile.TarFile.OPEN_METH
+
+    @classmethod
+    def zstopen(
+        cls,
+        name: str ,
+        mode: typing.Literal["r", "w", "x"] = "r",
+        fileobj: typing.Optional[typing.BinaryIO] = None,
+    ) -> tarfile.TarFile:
+        if mode not in ("r", "w", "x"):
+            raise NotImplementedError(f"mode `{mode}' not implemented for zst")
+        try:
+            import zstandard
+        except ImportError:
+            raise tarfile.CompressionError("zstandard module not available")
+        if mode == "r":
+            zfobj = zstandard.open(fileobj or name, "rb")
+        else:
+            zfobj = zstandard.open(
+                fileobj or name,
+                mode + "b",
+                cctx=zstandard.ZstdCompressor(write_checksum=True, threads=-1),
+            )
+        try:
+            print(f"calling taropen with {name=}, {mode=}, {zfobj=}")
+            tarobj = cls.taropen(name, mode, zfobj)
+        except (OSError, EOFError, zstandard.ZstdError) as exc:
+            zfobj.close()
+            if mode == "r":
+                raise tarfile.ReadError("not a zst file") from exc
+            raise
+        except:
+            zfobj.close()
+            raise
+        # Setting the _extfileobj attribute is important to signal a need to
+        # close this object and thus flush the compressed stream.
+        # Unfortunately, tarfile.pyi doesn't know about it.
+        tarobj._extfileobj = False  # type: ignore
+        return tarobj
